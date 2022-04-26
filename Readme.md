@@ -50,3 +50,6 @@ git clone SSH-адрес_вашего_форка
 
 [check-image]: https://github.com/htmlacademy-ecmascript/2016081-cinemaddict-17/workflows/Project%20check/badge.svg?branch=master
 [check-url]: https://github.com/htmlacademy-ecmascript/2016081-cinemaddict-17/actions
+
+Наставник: Евгений Фаллер
+
