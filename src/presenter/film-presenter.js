@@ -2,6 +2,7 @@ import HeaderProfileView from '../view/header-profile-view.js';
 import FooterStatusView from '../view/footer-status-view.js';
 import ButtonShowMoreView from '../view/films-list-show-more-view.js';
 import FilmCardView from '../view/film-card-view.js';
+import FilmPopupView from '../view/film-popup-view.js';
 
 import FilmsSectionView from '../view/films-view.js';
 import FilmsListView from '../view/films-list-view.js';
@@ -14,7 +15,8 @@ import {render} from '../render.js';
 
 
 export default class FilmPresenter {
-  constructor(mainElement, headerElement, footerElement) {
+  constructor(bodyElement, mainElement, headerElement, footerElement) {
+    this.bodyContainer = bodyElement;
     this.mainContainer = mainElement;
     this.headerContainer = headerElement;
     this.footerContainer = footerElement;
@@ -32,7 +34,14 @@ export default class FilmPresenter {
   navigationComponent = new NavigationView();
   sortComponent = new SortView();
 
-  init = () => {
+  init = (moveModel, commentModel) => {
+
+    // список фильмов
+    this.moveModel = moveModel;
+    this.moveFilms = [...this.moveModel.getMove()];
+    // все коментарии
+    this.commentModel = commentModel;
+    this.commentsFilms = [...this.commentModel.getComment()];
 
     render(this.navigationComponent, this.mainContainer);
     render(this.sortComponent, this.mainContainer);
@@ -55,15 +64,22 @@ export default class FilmPresenter {
     render(new HeaderProfileView(), this.headerContainer);
     render(new FooterStatusView(), this.footerContainer);
 
-    for (let i = 0; i < 8; i++) {
+    /* for (let i = 0; i < 8; i++) {
       render(new FilmCardView(), this.containerFilms.getElement());
+    } */
+
+    for (let i = 0; i < this.moveFilms.length; i++) {
+      render(new FilmCardView(this.moveFilms[i]), this.containerFilms.getElement());
     }
 
-    render(new FilmCardView(), this.containerRated.getElement());
-    render(new FilmCardView(), this.containerRated.getElement());
+    render(new FilmCardView(this.moveFilms[0]), this.containerRated.getElement());
+    render(new FilmCardView(this.moveFilms[1]), this.containerRated.getElement());
 
-    render(new FilmCardView(), this.containerComment.getElement());
-    render(new FilmCardView(), this.containerComment.getElement());
+    render(new FilmCardView(this.moveFilms[0]), this.containerComment.getElement());
+    render(new FilmCardView(this.moveFilms[1]), this.containerComment.getElement());
+
+
+    render(new FilmPopupView(this.moveFilms[0], this.commentsFilms), this.bodyContainer);
 
   };
 }
