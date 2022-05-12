@@ -1,7 +1,15 @@
 import FilmPresenter from './presenter/film-presenter.js';
+import MoveModel from './model/move-model.js';
+import CommentModel from './model/comment-model.js';
 
-const siteMainElement = document.querySelector('.main');
-const siteHeaderElement = document.querySelector('.header');
-const siteFooterElement = document.querySelector('.footer__statistics');
+const bodyElement = document.querySelector('body');
+const mainElement = bodyElement.querySelector('.main');
+const headerElement = bodyElement.querySelector('.header');
+const footerElement = bodyElement.querySelector('.footer__statistics');
 
-new FilmPresenter(siteMainElement, siteHeaderElement, siteFooterElement).init();
+const moveModel = new MoveModel();
+const commentModel = new CommentModel();
+
+
+// new FilmPresenter(siteMainElement, siteHeaderElement, siteFooterElement).init();
+new FilmPresenter(bodyElement, mainElement, headerElement, footerElement).init(moveModel, commentModel);
