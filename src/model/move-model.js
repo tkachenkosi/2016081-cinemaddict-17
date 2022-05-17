@@ -1,7 +1,9 @@
 import {generateMove} from '../mock/move-mock.js';
 
 export default class MoveModel {
-  move = Array.from({length: 3}, generateMove);
+  #movies = Array.from({length: 13}, generateMove);
 
-  getMove = () => this.move;
+  get movies() {
+    return this.#movies;
+  }
 }
