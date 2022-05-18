@@ -1,3 +1,4 @@
+import {render, remove} from '../framework/render';
 import HeaderProfileView from '../view/header-profile-view';
 import FooterStatusView from '../view/footer-status-view';
 import ButtonShowMoreView from '../view/films-list-show-more-view';
@@ -12,7 +13,7 @@ import FilmsListContainerView from '../view/films-list-container-view';
 
 import NavigationView from '../view/navigation-view';
 import SortView from '../view/sort-view';
-import {render} from '../render';
+import {isEscape} from '../utils/utils';
 
 const FILM_COUNT_PER_PAGE = 5;
 
@@ -65,7 +66,8 @@ export default class FilmPresenter {
       // кнопка show more
       if (this.#moviesData.length > FILM_COUNT_PER_PAGE) {
         render(this.#buttonComponent, this.#listFilms.element);
-        this.#buttonComponent.element.addEventListener('click', this.#hamdleButtonShowMoreClick);
+        // подписка на обработчик кнопки
+        this.#buttonComponent.setClickHandler(this.#handlerButtonShowMoreClick);
       }
       // секция top rated
       render(this.#listTopRated, this.#filmsSection.element);
@@ -93,15 +95,15 @@ export default class FilmPresenter {
   };
 
 
-  #hamdleButtonShowMoreClick = () => {
+  #handlerButtonShowMoreClick = () => {
     this.#moviesData.slice(this.#renderCardsCount, this.#renderCardsCount + FILM_COUNT_PER_PAGE)
       .forEach((film) => this.#renderCard(film, this.#containerFilms.element));
 
     this.#renderCardsCount += FILM_COUNT_PER_PAGE;
 
     if (this.#renderCardsCount >= this.#moviesData.length) {
-      this.#buttonComponent.element.remove();
-      this.#buttonComponent.removeElement();
+      // удаление обработчика кнопки по достижению конца списка фильмов
+      remove(this.#buttonComponent);
     }
   };
 
@@ -110,11 +112,8 @@ export default class FilmPresenter {
   #renderCard = (film, container) => {
     const cardComponent = new FilmCardView(film);
 
-    // показать popup
-    cardComponent.element.querySelector('.film-card__poster').addEventListener('click', () => {
-    // cardComponent.element.querySelector('.film-card__link').addEventListener('click', () => {
-      this.#renderPopup(film, this.#commentsData);
-    });
+    // подписка на событие для каждой карточки - показать popup
+    cardComponent.setEditClickHandler(() => {this.#renderPopup(film, this.#commentsData);});
 
     render(cardComponent, container);
   };
@@ -125,21 +124,27 @@ export default class FilmPresenter {
     const popupComponent = new FilmPopupView(film, comments);
     const containerBody = document.querySelector('body');
 
-    // закрытие popup
-    popupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', () => {
+    let onEscKeyDown = null;
+
+    const handlerClosePopup = () => {
+      // удаляем обработчики
+      popupComponent.element.querySelector('.film-details__close-btn').removeEventListener('click', handlerClosePopup);
+      document.removeEventListener('keydown', onEscKeyDown);
+
       popupComponent.removeElement();
       containerBody.querySelector('.film-details').remove();
-    });
+    };
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        // evt.preventDefault();
-        popupComponent.removeElement();
-        containerBody.querySelector('.film-details').remove();
-        document.removeEventListener('keydown', onEscKeyDown);
+    onEscKeyDown = (evt) => {
+      if (isEscape(evt)) {
+
+        handlerClosePopup();
       }
     };
 
+    // закрытие popup по кнопки
+    popupComponent.element.querySelector('.film-details__close-btn').addEventListener('click', handlerClosePopup);
+    // закрфть по Esc
     document.addEventListener('keydown', onEscKeyDown);
 
     // вывести подробную карточку фильма

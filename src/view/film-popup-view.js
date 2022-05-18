@@ -1,4 +1,4 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view';
 import {getFormatDate, getNowDateTime, runTime, getListFromArray} from '../utils/utils';
 
 // шаблон одного коментария
@@ -20,8 +20,7 @@ const createCommentTemplate = (commentItem = {}) => {
           <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
         </p>
       </div>
-    </li>`
-  );
+    </li>`);
 };
 
 
@@ -35,8 +34,8 @@ const createPopupTemplate = (movieData = {}, commentsData = {}) => {
   // список жанров
   const genreItemsTemplate = genre.map((item) => `<span class="film-details__genre">${item}</span>`).join('');
 
-  return (`
-  <section class="film-details">
+  return (
+    `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="film-details__top-container">
       <div class="film-details__close">
@@ -151,28 +150,17 @@ const createPopupTemplate = (movieData = {}, commentsData = {}) => {
 };
 
 
-export default class FilmPopupView {
-  #element = null;
+export default class FilmPopupView extends AbstractView {
 
-  constructor(move, commentItems) {
-    this.move = move;
+  constructor(movie, commentItems) {
+    super();
+    this.movie = movie;
     this.commentItems = commentItems;
   }
 
   get template() {
-    return createPopupTemplate(this.move, this.commentItems);
+    return createPopupTemplate(this.movie, this.commentItems);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
 

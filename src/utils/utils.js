@@ -4,6 +4,8 @@ const MAX_LEN_DESCRIPT = 139;
 
 // const EMOTION = ['smile', 'sleeping', 'puke', 'angry']
 
+export const isEscape = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
 export const getRamdomInteger = (a = 0, b = 1) => {
   const lower = Math.cell(Math.min(a,b));
   const upper = Math.floor(Math.max(a,b));
