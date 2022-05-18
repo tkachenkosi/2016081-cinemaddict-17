@@ -1,6 +1,6 @@
-import {generateMove} from '../mock/move-mock.js';
+import {generateMove} from '../mock/movie-mock';
 
-export default class MoveModel {
+export default class MovieModel {
   #movies = Array.from({length: 13}, generateMove);
 
   get movies() {

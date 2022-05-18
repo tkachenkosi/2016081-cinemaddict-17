@@ -1,12 +1,12 @@
-import {createElement} from '../render.js';
-import {getYearDate, getDescript, runTime} from '../utils/utils.js';
+import AbstractView from '../framework/view/abstract-view';
+import {getYearDate, getDescript, runTime} from '../utils/utils';
 
-const createTemplate = (move) => {
+const createTemplate = (movie) => {
 
-  const {comments, film_info: {title, total_rating: totalRating, poster, release: {date}, runtime, genre, description}} = move;
+  const {comments, film_info: {title, total_rating: totalRating, poster, release: {date}, runtime, genre, description}} = movie;
 
-  return (`
-  <article class="film-card">
+  return (
+    `<article class="film-card">
     <a class="film-card__link">
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${totalRating}</p>
@@ -24,29 +24,27 @@ const createTemplate = (move) => {
       <button class="film-card__controls-item film-card__controls-item--mark-as-watched" type="button">Mark as watched</button>
       <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
     </div>
-  </article>`);
+    </article>`);
 };
 
-export default class FilmCardView {
-  #element = null;
-
-  constructor(move) {
-    this.move = move;
+export default class FilmCardView extends AbstractView {
+  constructor(movie) {
+    super();
+    this.movie = movie;
   }
 
   get template() {
-    return createTemplate(this.move);
+    return createTemplate(this.movie);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
 
-    return this.#element;
-  }
+    this.element.querySelector('.film-card__poster').addEventListener('click', this.#editHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #editHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 }
