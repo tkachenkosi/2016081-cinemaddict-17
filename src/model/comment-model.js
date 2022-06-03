@@ -1,10 +1,23 @@
-import {generateComment} from '../mock/comment-mock';
+import {generateComment, generateCommentDust} from '../mock/comment-mock';
 
 export default class CommentModel {
-  #comments = Array.from({length: 3}, generateComment);
+  constructor (dust = true) {
+    this._dust = dust;
+  }
+
+  // #comments = null;
+
+  getComments = () => {
+    if (this._dust) {
+      return generateCommentDust();
+    } else {
+      return Array.from({length: 3}, generateComment);
+    }
+  };
 
   get comments() {
-    return this.#comments;
+    // return this.#comments;
+    return this.getComments();
   }
 }
 

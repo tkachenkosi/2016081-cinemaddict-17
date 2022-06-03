@@ -1,4 +1,4 @@
-import FilmPresenter from './presenter/film-presenter';
+import ListPresenter from './presenter/list-presenter';
 import MovieModel from './model/movie-model';
 import CommentModel from './model/comment-model';
 
@@ -11,4 +11,4 @@ const movieModel = new MovieModel();
 const commentModel = new CommentModel();
 
 
-new FilmPresenter(mainElement, headerElement, footerElement, movieModel, commentModel).init();
+new ListPresenter(mainElement, headerElement, footerElement, movieModel, commentModel).init();

@@ -26,5 +26,22 @@ export const runTime = (runtimeMinutes) => {
   return (`${h}h ${runtimeMinutes - h * 60}m`);
 };
 
+
 export const getDescript = (descript) => descript.length > MAX_LEN_DESCRIPT ? `${descript.slice(0, MAX_LEN_DESCRIPT)}...` : descript;
+
+
+export const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
+
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
 
