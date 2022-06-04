@@ -162,5 +162,58 @@ export default class FilmPopupView extends AbstractView {
     return createPopupTemplate(this.movie, this.commentItems);
   }
 
+  // обработчик кнопки
+  setCloseClickHandler = (callback) => {
+    this._callback.clickClose = callback;
+    this.element.querySelector('.film-details__close-btn').addEventListener('click', this.#clickCloseHandler);
+  };
+
+  #clickCloseHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickClose();
+  };
+
+
+  setCloseKeyHandler = (callback) => {
+    this._callback.keyDown = callback;
+    document.addEventListener('keydown', this.#keyDownHandler);
+  };
+
+  #keyDownHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.keyDown(evt);
+  };
+
+
+  setClickFavoriteHandler = (callback) => {
+    this._callback.clickFavorite = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#clickFavoriteHandler);
+  };
+
+  #clickFavoriteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickFavorite();
+  };
+
+  setClickWatchedHandler = (callback) => {
+    this._callback.clickWatched = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#clickWatchedHandler);
+  };
+
+  #clickWatchedHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatched();
+  };
+
+  setClickWatchlistHandler = (callback) => {
+    this._callback.clickWatchlist = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#clickWatchlistHandler);
+  };
+
+  #clickWatchlistHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.clickWatchlist();
+  };
+
 }
 
