@@ -79,10 +79,4 @@ export default class FilmCardView extends AbstractView {
     this._callback.clickWatchlist();
   };
 
-
-
-
-
-
-
 }

@@ -173,7 +173,7 @@ export default class FilmPopupView extends AbstractView {
     this._callback.clickClose();
   };
 
-  
+
   setCloseKeyHandler = (callback) => {
     this._callback.keyDown = callback;
     document.addEventListener('keydown', this.#keyDownHandler);
@@ -214,9 +214,6 @@ export default class FilmPopupView extends AbstractView {
     evt.preventDefault();
     this._callback.clickWatchlist();
   };
-
-
-
 
 }
 

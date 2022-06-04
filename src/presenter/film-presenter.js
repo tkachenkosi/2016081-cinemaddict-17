@@ -2,7 +2,7 @@ import {render, replace, remove} from '../framework/render';
 import FilmCardView from '../view/film-card-view';
 import FilmPopupView from '../view/film-popup-view';
 // import PopupPresenter from './popup-presenter';
-import {isEscape, updateItem} from '../utils/utils';
+import {isEscape} from '../utils/utils';
 
 const Mode = {
   OPEN: 'OPEN',
@@ -17,17 +17,14 @@ export default class FilmPresenter {
   #popupComponent = null;
   #container = null;
   #bodyContainer = document.querySelector('body');
-  
   #changeData = null;
   #changeMode = null;
-  // mode = null;
-  mode = Mode.CLOSE;
-
+  #mode = Mode.CLOSE;
   #popupPresenter = null;
 
 
   constructor(container, changeData, changeMode) {
-    this.#container = container
+    this.#container = container;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
@@ -46,7 +43,7 @@ export default class FilmPresenter {
 
     if (prevCardComponent === null) {
       render(this.#cardComponent, this.#container);
-      return
+      return;
     }
 
     if (this.#container.contains(prevCardComponent.element)) {
@@ -57,9 +54,6 @@ export default class FilmPresenter {
     remove(prevCardComponent);
   };
 
-  get valueMode() {
-    return this.mode;
-  }
 
   destory = () => {
     remove(this.#cardComponent);
@@ -67,9 +61,7 @@ export default class FilmPresenter {
 
 
   resetView = () => {
-console.log('1 restView', this.mode, this.#film.id, 'value', this.valueMode);
     if (this.mode === Mode.OPEN) {
-// console.log('2 restView', this.mode, this.#film.id);
       this.destoryPopup();
     }
   };
@@ -87,7 +79,7 @@ console.log('1 restView', this.mode, this.#film.id, 'value', this.valueMode);
   };
 
 
-// *********** popup *************
+  // *********** popup *************
 
   // окно с детальной информацией и коментарииеми
   #renderPopup = () => {
@@ -98,42 +90,26 @@ console.log('1 restView', this.mode, this.#film.id, 'value', this.valueMode);
     this.#popupComponent.setClickWatchedHandler(this.#handleWatchedClick);
     this.#popupComponent.setClickWatchlistHandler(this.#handleWatchlistClick);
     this.#initPopup();
-  }
+  };
 
   #initPopup = () => {
     render(this.#popupComponent, this.#bodyContainer);
     document.addEventListener('keydown', this.#onEscKeyDown);
     this.#changeMode();
     this.mode = Mode.OPEN;
-console.log('initPopup', this.mode, this.#film.id);
   };
 
   #onEscKeyDown = (evt) => {
     if (isEscape(evt)) {
-      // evt.preventDefault();
+      evt.preventDefault();
       this.destoryPopup();
     }
   };
 
   destoryPopup = () => {
-console.log('distoryPopup', this.mode, this.#film.id);
     document.removeEventListener('keydown', this.#onEscKeyDown);
     remove(this.#popupComponent);
     this.mode = Mode.CLOSE;
   };
-
-
-  // очистка для функций сортировки
-  /* #clearCardList = () => {
-    this.#cards.forEach((card) => remove(card));
-    this.#cards.clear();
-    this.#renderCardsCount = FILM_COUNT_PER_PAGE;
-    remove(this.#btnShowMoreComponent);
-  }
-
-
-  #handleModeChange = () => {
-    this.#cards.forEach((film) => film.reserView)
-  }; */
 
 }

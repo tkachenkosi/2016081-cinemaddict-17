@@ -1,4 +1,3 @@
-
 const generateComment = () => (
   {
     id: 42,
@@ -7,8 +6,6 @@ const generateComment = () => (
     date: '2019-05-11T16:12:32.554Z',
     emotion: 'smile'
   });
-
-
 
 const generateCommentDust = () => (
   [
@@ -69,6 +66,5 @@ const generateCommentDust = () => (
       emotion: 'smile'
     },
   ]);
-
 
 export {generateComment, generateCommentDust};

@@ -4,9 +4,6 @@ import HeaderProfileView from '../view/header-profile-view';
 import FooterStatusView from '../view/footer-status-view';
 import ButtonShowMoreView from '../view/films-list-show-more-view';
 import FilmPresenter from './film-presenter';
-// import PopupPresenter from './popup-presenter';
-// import FilmCardView from '../view/film-card-view';
-// import FilmPopupView from '../view/film-popup-view';
 
 import FilmsSectionView from '../view/films-view';
 import FilmsListView from '../view/films-list-view';
@@ -16,11 +13,10 @@ import FilmsListContainerView from '../view/films-list-container-view';
 
 import NavigationView from '../view/navigation-view';
 import SortView from '../view/sort-view';
-import {isEscape, updateItem} from '../utils/utils';
+import {updateItem} from '../utils/utils';
+import {SortType} from '../utils/const';
 
 const FILM_COUNT_PER_PAGE = 5;
-let test2 = null;
-let id = null
 
 export default class ListPresenter {
   #commentsModel = null;
@@ -28,6 +24,7 @@ export default class ListPresenter {
   #footerContainer = null;
   #mainContainer = null;
   #moviesModel = null;
+  #currentSortType= SortType.DEFAULT;
 
   constructor(mainElement, headerElement, footerElement, movieModel, commentModel) {
     this.#mainContainer = mainElement;
@@ -74,6 +71,7 @@ export default class ListPresenter {
 
   #renderSort = () => {
     render(this.#sortComponent, this.#mainContainer);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderFilmSection = () => {
@@ -89,8 +87,8 @@ export default class ListPresenter {
     render(this.#listTopRated, this.#filmsSection.element);
     render(this.#containerTopRated, this.#listTopRated.element);
 
-    this.#renderCard(this.#moviesData[0], this.#containerTopRated.element);
-    this.#renderCard(this.#moviesData[1], this.#containerTopRated.element);
+    this.#renderTopCommentCard(this.#moviesData[0]);
+    this.#renderTopCommentCard(this.#moviesData[1]);
   };
 
   #renderTopComment = () => {
@@ -98,8 +96,8 @@ export default class ListPresenter {
     render(this.#listTopComment, this.#filmsSection.element);
     render(this.#containerTopComment, this.#listTopComment.element);
 
-    this.#renderCard(this.#moviesData[0], this.#containerTopComment.element);
-    this.#renderCard(this.#moviesData[1], this.#containerTopComment.element);
+    this.#renderTopRatedCard(this.#moviesData[0]);
+    this.#renderTopRatedCard(this.#moviesData[1]);
   };
 
   #renderHeaderProfile = () => {
@@ -136,7 +134,7 @@ export default class ListPresenter {
 
 
   #renderBoard = () => {
-    this.#renderNav(); 
+    this.#renderNav();
 
     if (this.#moviesData.length > 0) {
       this.#renderSort();
@@ -167,6 +165,32 @@ export default class ListPresenter {
     this.#mapFilmPresentor.set(film.id, filmPresenter);
   };
 
+  #handleCardChange = (updatedCard) => {
+    this.#moviesData = updateItem(this.#moviesData, updatedCard);
+    this.#mapFilmPresentor.get(updatedCard.id).init(updatedCard, this.#commentsData);
+  };
+
+
+  #handleModeChange = () => {
+    this.#mapFilmPresentor.forEach((presenter) => presenter.resetView());
+    this.#mapTopRatePresentor.forEach((presenter) => presenter.resetView());
+    this.#mapTopCommentPresentor.forEach((presenter) => presenter.resetView());
+  };
+
+
+  #renderTopRatedCard = (film) => {
+    const filmPresenter = new FilmPresenter(this.#containerTopRated.element, this.#handleCardChange, this.#handleModeChange);
+    filmPresenter.init(film, this.#commentsData);
+    this.#mapTopRatePresentor.set(film.id, filmPresenter);
+  };
+
+  #renderTopCommentCard = (film) => {
+    const filmPresenter = new FilmPresenter(this.#containerTopComment.element, this.#handleCardChange, this.#handleModeChange);
+    filmPresenter.init(film, this.#commentsData);
+    this.#mapTopCommentPresentor.set(film.id, filmPresenter);
+  };
+
+  // очистка для функций сортировки
   #clearCardList = () => {
     this.#mapFilmPresentor.forEach((presenter) => presenter.destory());
     this.#mapFilmPresentor.clear();
@@ -175,60 +199,14 @@ export default class ListPresenter {
   };
 
 
-  #handleCardChange = (updatedCard) => {
-    this.#moviesData = updateItem(this.#moviesData, updatedCard);
-    this.#mapFilmPresentor.get(updatedCard.id).init(updatedCard, this.#commentsData);
+  #handleSortTypeChange = (sortType) => {
+    // сортитуем
+    // очищаем список
+    // редерим список заново
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    this.#clearCardList();
   };
-
-
-  #handleModeChange = () => {
-
-
-    this.#mapFilmPresentor.forEach((presenter) => presenter.resetView());
-    
-    // this.#mapFilmPresentor.forEach((presenter) => {
-      // id = presenter.id;
-    // test2 = presenter.mode;
-// console.log('mode change', test2, id, presenter.test1);
-// console.log(presenter);
-      // presenter.resetView()
-    // }
-    // );
-
-
-
-    // this.#mapTopRatePresentor.forEach((presenter) => presenter.resetView());
-    // this.#mapTopCommentPresentor.forEach((presenter) => presenter.resetView());
-  };
-
-
-  // показать карточку фильма
-  /* #renderCard = (film, container) => {
-    const cardComponent = new FilmCardView(film);
-    cardComponent.setEditClickHandler(() => {this.#renderPopup(film, this.#commentsData);});
-    render(cardComponent, container);
-    this.#cards.set(film.id, cardComponent);  // запоминаем отрисованную карточку в массиве
-  }; */
-
-
-
-  // очистка для функций сортировки
-  /* #clearCardList = () => {
-    this.#cards.forEach((card) => remove(card));
-    this.#cards.clear();
-    this.#renderCardsCount = FILM_COUNT_PER_PAGE;
-    remove(this.#btnShowMoreComponent);
-  }
-
-  #handleCardChange = (updatedCard) => {
-    this.#moviesData = updateItem(this.#moviesData, updateCard);
-    this.#cards.get(updateCard.id);
-    this.#renderCards();
-
-  }
-
-  #handleModeChange = () => {
-    this.#cards.forEach((film) => film.reserView)
-  }; */
 
 }

@@ -2,14 +2,14 @@ function selectFn() {
   let ok = false;
   return function() {
     return (ok = !ok);
-  }
+  };
 }
 
 function genId() {
-  let id = 1;
+  let i = 1;
   return function() {
-    return id++;
-  }
+    return i++;
+  };
 }
 
 const select = selectFn();
@@ -49,7 +49,7 @@ const generateMove = () => {
         'watching_date': '2019-04-12T16:12:32.554Z',
         favorite: false
       }
-    }
+    };
   } else {
     return {
       id: id(),
@@ -83,7 +83,7 @@ const generateMove = () => {
         'watching_date': '2019-06-12T16:12:32.554Z',
         favorite: false
       }
-    }
+    };
   }
 
 };
