@@ -13,10 +13,11 @@ import FilmsListContainerView from '../view/films-list-container-view';
 
 import NavigationView from '../view/navigation-view';
 import SortView from '../view/sort-view';
-import {updateItem} from '../utils/utils';
+import {updateItem, sortByDate, sortByRating} from '../utils/utils';
 import {SortType} from '../utils/const';
 
 const FILM_COUNT_PER_PAGE = 5;
+// const FILM_COUNT_EXTRA = 2;
 
 export default class ListPresenter {
   #commentsModel = null;
@@ -34,8 +35,9 @@ export default class ListPresenter {
     this.#commentsModel = commentModel;
   }
 
-  #moviesData = [];
-  #commentsData = [];
+  #films = [];
+  #commens = [];
+  #sourceFilms = [];
   #renderCardsCount = FILM_COUNT_PER_PAGE;
 
   #mapFilmPresentor = new Map();   // ссылоки на карточки, для перерисовки
@@ -53,13 +55,14 @@ export default class ListPresenter {
   #containerTopComment = new FilmsListContainerView();
 
   #navComponent = new NavigationView();
-  #sortComponent = new SortView();
+  #sortComponent = new SortView(this.#currentSortType);
   #btnShowMoreComponent = new ButtonShowMoreView;
 
 
   init = () => {
-    this.#moviesData = [...this.#moviesModel.movies];          // список фильмов
-    this.#commentsData = [...this.#commentsModel.comments];    // все коментарии
+    this.#films = [...this.#moviesModel.movies];          // список фильмов
+    this.#sourceFilms = [...this.#moviesModel.movies];          // список фильмов
+    this.#commens = [...this.#commentsModel.comments];    // все коментарии
 
     this.#renderBoard();
   };
@@ -87,8 +90,8 @@ export default class ListPresenter {
     render(this.#listTopRated, this.#filmsSection.element);
     render(this.#containerTopRated, this.#listTopRated.element);
 
-    this.#renderTopCommentCard(this.#moviesData[0]);
-    this.#renderTopCommentCard(this.#moviesData[1]);
+    this.#renderTopCommentCard(this.#films[0]);
+    this.#renderTopCommentCard(this.#films[1]);
   };
 
   #renderTopComment = () => {
@@ -96,8 +99,8 @@ export default class ListPresenter {
     render(this.#listTopComment, this.#filmsSection.element);
     render(this.#containerTopComment, this.#listTopComment.element);
 
-    this.#renderTopRatedCard(this.#moviesData[0]);
-    this.#renderTopRatedCard(this.#moviesData[1]);
+    this.#renderTopRatedCard(this.#films[0]);
+    this.#renderTopRatedCard(this.#films[1]);
   };
 
   #renderHeaderProfile = () => {
@@ -121,12 +124,12 @@ export default class ListPresenter {
   };
 
   #handlerButtonShowMoreClick = () => {
-    this.#moviesData.slice(this.#renderCardsCount, this.#renderCardsCount + FILM_COUNT_PER_PAGE)
+    this.#films.slice(this.#renderCardsCount, this.#renderCardsCount + FILM_COUNT_PER_PAGE)
       .forEach((film) => this.#renderCard(film, this.#containerFilms.element));
 
     this.#renderCardsCount += FILM_COUNT_PER_PAGE;
 
-    if (this.#renderCardsCount >= this.#moviesData.length) {
+    if (this.#renderCardsCount >= this.#films.length) {
       // удаление обработчика кнопки по достижению конца списка фильмов
       remove(this.#btnShowMoreComponent);
     }
@@ -136,7 +139,7 @@ export default class ListPresenter {
   #renderBoard = () => {
     this.#renderNav();
 
-    if (this.#moviesData.length > 0) {
+    if (this.#films.length > 0) {
       this.#renderSort();
       this.#renderFilmSection();
       this.#renderBtnShowMore();
@@ -154,20 +157,33 @@ export default class ListPresenter {
 
 
   #renderCards = () => {
-    for (let i = 0; i <  Math.min(this.#moviesData.length, FILM_COUNT_PER_PAGE); i++) {
-      this.#renderCard(this.#moviesData[i], this.#containerFilms.element);
+    for (let i = 0; i <  Math.min(this.#films.length, FILM_COUNT_PER_PAGE); i++) {
+      this.#renderCard(this.#films[i], this.#containerFilms.element);
     }
   };
 
   #renderCard = (film, container) => {
     const filmPresenter = new FilmPresenter(container, this.#handleCardChange, this.#handleModeChange);
-    filmPresenter.init(film, this.#commentsData);
+    filmPresenter.init(film, this.#commens);
     this.#mapFilmPresentor.set(film.id, filmPresenter);
   };
 
+  #renderCardsList = () => {
+    render(this.#containerFilms, this.#listFilms.element);
+
+    if (this.#renderCardsCount < this.#films.length) {
+      this.#renderBtnShowMore();
+    }
+
+    this.#films.slice(0, Math.min(this.#renderCardsCount, this.#films.length))
+      .forEach((film) => this.#renderCard(film, this.#containerFilms.element));
+
+  };
+
   #handleCardChange = (updatedCard) => {
-    this.#moviesData = updateItem(this.#moviesData, updatedCard);
-    this.#mapFilmPresentor.get(updatedCard.id).init(updatedCard, this.#commentsData);
+    this.#films = updateItem(this.#films, updatedCard);
+    this.#sourceFilms = updateItem(this.#sourceFilms, updatedCard);
+    this.#mapFilmPresentor.get(updatedCard.id).init(updatedCard, this.#commens);
   };
 
 
@@ -180,33 +196,53 @@ export default class ListPresenter {
 
   #renderTopRatedCard = (film) => {
     const filmPresenter = new FilmPresenter(this.#containerTopRated.element, this.#handleCardChange, this.#handleModeChange);
-    filmPresenter.init(film, this.#commentsData);
+    filmPresenter.init(film, this.#commens);
     this.#mapTopRatePresentor.set(film.id, filmPresenter);
   };
 
   #renderTopCommentCard = (film) => {
     const filmPresenter = new FilmPresenter(this.#containerTopComment.element, this.#handleCardChange, this.#handleModeChange);
-    filmPresenter.init(film, this.#commentsData);
+    filmPresenter.init(film, this.#commens);
     this.#mapTopCommentPresentor.set(film.id, filmPresenter);
+  };
+
+
+  #sortCards = (sortType) => {
+    // 2. Этот исходный массив задач необходим,
+    // потому что для сортировки мы будем мутировать
+    // массив в свойстве _boardTasks
+    switch (sortType) {
+      case SortType.DATE:
+        this.#films.sort(sortByDate);
+        break;
+      case SortType.RATING:
+        this.#films.sort(sortByRating);
+        break;
+      default:
+        // 3. А когда пользователь захочет "вернуть всё, как было",
+        // мы просто запишем в _boardTasks исходный массив
+        this.#films = [...this.#sourceFilms];
+    }
+
+    this.#currentSortType = sortType;
   };
 
   // очистка для функций сортировки
   #clearCardList = () => {
     this.#mapFilmPresentor.forEach((presenter) => presenter.destory());
     this.#mapFilmPresentor.clear();
-    this.#renderCardsCount = FILM_COUNT_PER_PAGE;
+    // this.#renderCardsCount = FILM_COUNT_PER_PAGE;
     remove(this.#btnShowMoreComponent);
   };
 
-
   #handleSortTypeChange = (sortType) => {
-    // сортитуем
-    // очищаем список
-    // редерим список заново
     if (this.#currentSortType === sortType) {
       return;
     }
+
+    this.#sortCards(sortType);
     this.#clearCardList();
+    this.#renderCardsList();
   };
 
 }

@@ -21,6 +21,12 @@ export const getNowDateTime = (date) => dayjs(date).format('YYYY/MM/DD hh:mm');
 
 export const getYearDate = (date) => dayjs(date).year();
 
+export const sortByDate = (a, b) => dayjs(b.film_info.release.date).diff(dayjs(a.film_info.release.date));
+
+export const sortByRating = (a, b) => b.film_info.total_rating - a.film_info.total_rating;
+
+export const sortByComments = (movies) => movies.sort((prev, next) => next.commentsCount - prev.commentsCount);
+
 export const runTime = (runtimeMinutes) => {
   const h = Math.floor(runtimeMinutes/60);
   return (`${h}h ${runtimeMinutes - h * 60}m`);

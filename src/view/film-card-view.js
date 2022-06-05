@@ -17,7 +17,7 @@ const createTemplate = (movie) => {
       </p>
         <img src="${poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${getDescript(description)}</p>
-        <span class="film-card__comments">${comments.length} comments</span>
+        <span class="film-card__comments">${comments.length} comments (${movie.id})</span>
     </a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>

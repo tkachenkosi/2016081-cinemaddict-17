@@ -1,7 +1,7 @@
 export const SortType = {
   DEFAULT: 'default',
-  BY_RATING: 'rating',
-  BY_DATE: 'date',
+  RATING: 'rating',
+  DATE: 'date',
 };
 
 export const FilterType = {

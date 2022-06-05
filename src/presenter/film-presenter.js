@@ -112,4 +112,18 @@ export default class FilmPresenter {
     this.mode = Mode.CLOSE;
   };
 
+
+  // очистка для функций сортировки
+  /* #clearCardList = () => {
+    this.#cards.forEach((card) => remove(card));
+    this.#cards.clear();
+    this.#renderCardsCount = FILM_COUNT_PER_PAGE;
+    remove(this.#btnShowMoreComponent);
+  }
+
+
+  #handleModeChange = () => {
+    this.#cards.forEach((film) => film.reserView)
+  }; */
+
 }
